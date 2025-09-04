@@ -2,7 +2,26 @@ from flask import Flask, request, jsonify
 from flask_cors import CORS
 import torch
 from transformers import AutoTokenizer, AutoModelForTokenClassification
+import os
+import gdown
+import zipfile
 
+
+# ----------------------------
+# Tải model từ Google Drive
+# ----------------------------
+model_dir = "ingredient-model"
+file_id = "YOUR_FILE_ID"   # <-- thay bằng ID file model.zip trong Drive
+output = f"{model_dir}.zip"
+
+if not os.path.exists(model_dir):
+    print("Downloading model from Google Drive...")
+    url = f"https://drive.google.com/uc?id={file_id}"
+    gdown.download(url, output, quiet=False)
+
+    with zipfile.ZipFile(output, 'r') as zip_ref:
+        zip_ref.extractall(".")
+    print("Model extracted!")
 # ----------------------------
 # Load model + tokenizer
 # ----------------------------
