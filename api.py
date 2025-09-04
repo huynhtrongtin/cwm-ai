@@ -73,4 +73,8 @@ def api_extract():
     return jsonify({"ingredients": ingredients})
 
 if __name__ == "__main__":
-    app.run(debug=True)
+    if os.environ.get("COLAB"):
+        # Khi chạy trên Colab, không tự run Flask
+        print("Running on Colab - Flask will be run from notebook")
+    else:
+        app.run(debug=True)  # chạy local nếu không phải Colab
