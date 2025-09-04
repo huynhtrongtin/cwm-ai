@@ -1,10 +1,5 @@
-torch>=2.2.0
-transformers>=4.56.0
-datasets>=2.19.0
-numpy
-tqdm
 flask
 flask-cors
 torch
-pyngrok
+transformers
 gdown
