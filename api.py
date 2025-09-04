@@ -16,13 +16,12 @@ model = AutoModelForTokenClassification.from_pretrained(model_name)
 # ----------------------------
 # Load model + tokenizer
 # ----------------------------
-model_name = "ingredient-model"
 tokenizer = AutoTokenizer.from_pretrained(model_name)
 model = AutoModelForTokenClassification.from_pretrained(model_name)
-model.eval()
 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-model.to(device)
+model.to(device).eval()
+
 print(f"Device set to use {device}")
 
 # ----------------------------
