@@ -7,16 +7,25 @@ import gdown
 import zipfile
 
 # ----------------------------
-# Tải model từ Google Drive
+# Thiết lập model path
 # ----------------------------
-model_name = "/content/drive/MyDrive/app_cwm/model_AI/ingredient-model"
-tokenizer = AutoTokenizer.from_pretrained(model_name)
-model = AutoModelForTokenClassification.from_pretrained(model_name)
+model_path = "model_AI/ingredient-model"
+
+# Nếu chưa có model, tải từ Google Drive
+if not os.path.exists(model_path):
+    os.makedirs("model_AI", exist_ok=True)
+    # Thay <file_id> bằng ID public của zip trên Drive
+    url = "https://drive.google.com/uc?id=<file_id>"
+    gdown.download(url, "model.zip", quiet=False)
+    # Giải nén
+    with zipfile.ZipFile("model.zip", 'r') as zip_ref:
+        zip_ref.extractall(model_path)
+
 # ----------------------------
 # Load model + tokenizer
 # ----------------------------
-tokenizer = AutoTokenizer.from_pretrained(model_name)
-model = AutoModelForTokenClassification.from_pretrained(model_name)
+tokenizer = AutoTokenizer.from_pretrained(model_path)
+model = AutoModelForTokenClassification.from_pretrained(model_path)
 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 model.to(device).eval()
@@ -72,9 +81,10 @@ def api_extract():
     ingredients = extract_ingredients(text)
     return jsonify({"ingredients": ingredients})
 
+# ----------------------------
+# Chạy Flask server
+# ----------------------------
 if __name__ == "__main__":
-    if os.environ.get("COLAB"):
-        # Khi chạy trên Colab, không tự run Flask
-        print("Running on Colab - Flask will be run from notebook")
-    else:
-        app.run(debug=True)  # chạy local nếu không phải Colab
+    # Railway cung cấp PORT qua biến môi trường
+    port = int(os.environ.get("PORT", 5000))
+    app.run(host="0.0.0.0", port=port, debug=True)
