@@ -5,7 +5,7 @@ from transformers import AutoTokenizer, AutoModelForTokenClassification
 import os
 import gdown
 import zipfile
-
+from pyngrok import ngrok
 
 # ----------------------------
 # Tải model từ Google Drive
@@ -74,4 +74,7 @@ def api_extract():
     return jsonify({"ingredients": ingredients})
 
 if __name__ == "__main__":
+    # mở ngrok tunnel
+    public_url = ngrok.connect(5000)
+    print(" * Public URL:", public_url)
     app.run(port=5000, debug=True)
