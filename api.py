@@ -14,7 +14,7 @@ model_path = "model_AI/ingredient-model"
 # Nếu chưa có model, tải từ Google Drive lúc container start
 if not os.path.exists(model_path):
     os.makedirs("model_AI", exist_ok=True)
-    url = "https://drive.google.com/uc?id=<file_id>"  # Thay <file_id> bằng file zip trên Drive
+    url = "https://drive.google.com/file/d/1pWYqqSw2DP9dik5FDZ57lod_S2i-_Dy-/view?usp=sharing"  # Thay <file_id> bằng file zip trên Drive
     gdown.download(url, "model.zip", quiet=False)
     # Giải nén
     with zipfile.ZipFile("model.zip", 'r') as zip_ref:
