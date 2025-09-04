@@ -3,3 +3,8 @@ transformers>=4.56.0
 datasets>=2.19.0
 numpy
 tqdm
+flask
+flask-cors
+torch
+pyngrok
+gdown
