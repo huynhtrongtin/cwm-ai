@@ -1,21 +1,20 @@
+import os
+import gdown
+import zipfile
 from flask import Flask, request, jsonify
 from flask_cors import CORS
 import torch
 from transformers import AutoTokenizer, AutoModelForTokenClassification
-import os
-import gdown
-import zipfile
 
 # ----------------------------
-# Thiết lập model path
+# Model path trong container
 # ----------------------------
 model_path = "model_AI/ingredient-model"
 
-# Nếu chưa có model, tải từ Google Drive
+# Nếu chưa có model, tải từ Google Drive lúc container start
 if not os.path.exists(model_path):
     os.makedirs("model_AI", exist_ok=True)
-    # Thay <file_id> bằng ID public của zip trên Drive
-    url = "https://drive.google.com/drive/folders/1tA2Tt2z3nDs80xSfOLTR-2htvVXGi0hF"
+    url = "https://drive.google.com/uc?id=<file_id>"  # Thay <file_id> bằng file zip trên Drive
     gdown.download(url, "model.zip", quiet=False)
     # Giải nén
     with zipfile.ZipFile("model.zip", 'r') as zip_ref:
@@ -60,16 +59,14 @@ def extract_ingredients(text):
         word = tokenizer.convert_tokens_to_string(current)
         ingredients.append(word)
 
-    # loại bỏ các PAD còn sót
     ingredients = [w for w in ingredients if "[PAD]" not in w]
-
     return ingredients
 
 # ----------------------------
 # Flask API
 # ----------------------------
 app = Flask(__name__)
-CORS(app)  # enable CORS nếu cần gọi từ trình duyệt
+CORS(app)
 
 @app.route("/api/extract", methods=["POST"])
 def api_extract():
@@ -77,14 +74,11 @@ def api_extract():
     text = data.get("text", "")
     if not text:
         return jsonify({"error": "Missing 'text' parameter"}), 400
-
-    ingredients = extract_ingredients(text)
-    return jsonify({"ingredients": ingredients})
+    return jsonify({"ingredients": extract_ingredients(text)})
 
 # ----------------------------
 # Chạy Flask server
 # ----------------------------
 if __name__ == "__main__":
-    # Railway cung cấp PORT qua biến môi trường
-    port = int(os.environ.get("PORT", 5000))
+    port = int(os.environ.get("PORT", 5000))  # Railway cung cấp PORT
     app.run(host="0.0.0.0", port=port, debug=True)
